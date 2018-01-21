@@ -11,9 +11,12 @@ public:
 	Game& operator=( const Game& ) = delete;
 	void Go();
 private:
-	void HandleInput(); // handle input
-	void Update(); // update the physic
-	void ComposeFrame(); // prepare the frame to be drawn and draw it after that
+	// handle input
+	void HandleInput();
+	// update the game
+	void Update( const sf::Time& dt );
+	// prepare the frame to be drawn and draw it after that
+	void ComposeFrame();
 private:
 	// after Game.Go() it is running till gameLoop is false
 	bool gameLoop;
@@ -27,6 +30,14 @@ private:
 	sf::RenderWindow window;
 	// event is to process input
 	sf::Event event;
-	
+	// keep track of the time to update at a fixed rate
+	sf::Clock time;
+	// game tick
+	const sf::Time tick;
+	// used for the direction of the shape
+	enum Direction
+	{
+		UP, DOWN, LEFT, RIGHT
+	}dir;
 	sf::CircleShape shape;
 };
