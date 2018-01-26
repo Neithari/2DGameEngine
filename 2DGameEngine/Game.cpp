@@ -18,6 +18,11 @@ void Game::Go()
 	gameLoop = true;
 	// leftover time at the end of each frame
 	sf::Time accumulator;
+	auto& skeleton( ecs.CreateEntity() );
+	skeleton.AddComponent<Position>( 10.f, 10.f );
+	skeleton.AddComponent<NPC>();
+	skeleton.AddComponent<Hitpoints>( 10 );
+	skeleton.AddComponent<Sprite>( "Sprite\\Skeleton.png" );
 
 	while( gameLoop )
 	{
@@ -29,6 +34,7 @@ void Game::Go()
 		while( accumulator >= tick )
 		{
 			Update( tick );
+			ecs.Update( tick );
 			accumulator -= tick;
 		}
 		// clear the window to prep it for next frame
@@ -42,28 +48,31 @@ void Game::Go()
 
 void Game::Update( const sf::Time& dt )
 {
-	
-	float x = 1.0f * dt.asMilliseconds();
-	float y = 1.0f * dt.asMilliseconds();
+	float speedPerSec = 200.0f;
+	sf::Rect<float> bounds = sf::Rect<float>{ 100.0f, 50.0f, 500.0f, 350.0f };
+
+	float x = speedPerSec * dt.asSeconds();
+	float y = speedPerSec * dt.asSeconds();
 	auto pos = shape.getPosition();
-	if( pos.x > 500.f )
+
+	if( pos.x > bounds.width )
 	{
-		shape.setPosition( 500.f, pos.y );
+		shape.setPosition( bounds.width, pos.y );
 		dir = DOWN;
 	}
-	if( pos.x < 100.f )
+	if( pos.x < bounds.left )
 	{
-		shape.setPosition( 100.f, pos.y );
+		shape.setPosition( bounds.left, pos.y );
 		dir = UP;
 	}
-	if( pos.y < 50.f )
+	if( pos.y < bounds.top )
 	{
-		shape.setPosition( pos.x, 50.f );
+		shape.setPosition( pos.x, bounds.top );
 		dir = RIGHT;
 	}
-	if( pos.y > 350.f )
+	if( pos.y > bounds.height )
 	{
-		shape.setPosition( pos.x, 350.f );
+		shape.setPosition( pos.x, bounds.height );
 		dir = LEFT;
 	}
 		
@@ -92,6 +101,7 @@ void Game::Update( const sf::Time& dt )
 void Game::ComposeFrame()
 {
 	window.draw( shape );
+	ecs.Draw( window );
 }
 
 void Game::HandleInput()

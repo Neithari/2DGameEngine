@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "ECS.h"
 
 class Game
 {
@@ -34,6 +35,9 @@ private:
 	sf::Clock time;
 	// game tick
 	const sf::Time tick;
+	// entity component system
+		// manager
+	ECS ecs;
 	// used for the direction of the shape
 	enum Direction
 	{
