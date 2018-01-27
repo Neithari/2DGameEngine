@@ -62,7 +62,10 @@ public:
 	void Destroy();
 
 	// get entity id
-	ecs::EntityID GetEntityID() const;
+	ecs::EntityID GetEntityID() const
+	{
+		return entityID;
+	}
 	// factory function
 	template<typename T, typename... TArgs>
 	T& AddComponent( TArgs&&... mArgs )

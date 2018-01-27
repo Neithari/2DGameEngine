@@ -7,7 +7,8 @@ Game::Game()
 	window( sf::VideoMode( screenWidth, screenHeight ), gameName ),
 	tick( sf::seconds( 1.f / 25.f ) ),
 	shape( 100.f ),
-	dir( RIGHT )
+	dir( RIGHT ),
+	ecsFactory( ecs )
 {
 	shape.setFillColor( sf::Color::Green );
 	shape.setPosition( 250.f, 100.f );
@@ -18,11 +19,8 @@ void Game::Go()
 	gameLoop = true;
 	// leftover time at the end of each frame
 	sf::Time accumulator;
-	auto& skeleton( ecs.CreateEntity() );
-	skeleton.AddComponent<Position>( sf::Vector2f{ 10.f, 10.f } );
-	skeleton.AddComponent<NPC>();
-	skeleton.AddComponent<Hitpoints>( 10 );
-	skeleton.AddComponent<Sprite>( "Sprite\\Skeleton.png" );
+
+	auto& skeleton( ecsFactory.CreateSkeleton() );
 
 	while( gameLoop )
 	{

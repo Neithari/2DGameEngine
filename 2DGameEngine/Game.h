@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "ECS.h"
+#include "ECSFactory.h"
 
 class Game
 {
@@ -38,6 +39,8 @@ private:
 	// entity component system
 		// manager
 	ECS ecs;
+		// factory class
+	ECSFactory ecsFactory;
 	// used for the direction of the shape
 	enum Direction
 	{
