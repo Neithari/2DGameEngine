@@ -19,7 +19,7 @@ void Game::Go()
 	// leftover time at the end of each frame
 	sf::Time accumulator;
 	auto& skeleton( ecs.CreateEntity() );
-	skeleton.AddComponent<Position>( 10.f, 10.f );
+	skeleton.AddComponent<Position>( sf::Vector2f{ 10.f, 10.f } );
 	skeleton.AddComponent<NPC>();
 	skeleton.AddComponent<Hitpoints>( 10 );
 	skeleton.AddComponent<Sprite>( "Sprite\\Skeleton.png" );

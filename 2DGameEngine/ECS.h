@@ -15,11 +15,22 @@ public:
 	// create an Entity
 	Entity& CreateEntity()
 	{
-		Entity* e{ new Entity{ GetUniqueEntityID() } };
+		Entity* e{ new Entity{ GetUniqueEntityID(), *this } };
 		std::unique_ptr<Entity> uPtr{ e };
 		entities.emplace_back( std::move( uPtr ) );
 		return *e;
 	}
+	// put an entity inside a group
+	void AddToGroup( Entity* pEntity, ecs::Group mGroup )
+	{
+		groupedEntities[mGroup].emplace_back( pEntity );
+	}
+	// get entities that belong to a group
+	std::vector<Entity*>& GetEntitiesByGroup( ecs::Group mGroup )
+	{
+		return groupedEntities[mGroup];
+	}
+
 private:
 	// erase dead entities
 	void Refresh();
@@ -31,4 +42,5 @@ private:
 	}
 private:
 	std::vector<std::unique_ptr<Entity>> entities;
+	std::array<std::vector<Entity*>, ecs::maxGroups> groupedEntities;
 };

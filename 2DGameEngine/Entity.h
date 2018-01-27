@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <utility>
 
+// forward declare ECS to be able to create a reference to the manager
+class ECS;
+
+
 // declared some usings for better readability and hide them inside a namespace
 namespace ecs
 {
@@ -17,15 +21,19 @@ namespace ecs
 	using ComponentBitset = std::bitset<maxComponent>;
 	using ComponentID = std::size_t;
 	using EntityID = std::size_t;
+	constexpr std::size_t maxGroups{ 32 };
+	using Group = std::size_t;
+	using GroupBitset = std::bitset<maxGroups>;
 }
 // container of Component and System logic
 class Entity
 {
 public:
-	Entity( ecs::EntityID id )
+	Entity( ecs::EntityID id, ECS& manager )
 		:
 		alive( true ),
-		entityID( id )
+		entityID( id ),
+		manager( manager )
 	{
 	}
 
@@ -51,16 +59,10 @@ public:
 		return alive;
 	}
 	// destroy the entity
-	void Destroy()
-	{
-		alive = false;
-	}
+	void Destroy();
 
 	// get entity id
-	ecs::EntityID GetEntityID() const
-	{
-		return entityID;
-	}
+	ecs::EntityID GetEntityID() const;
 	// factory function
 	template<typename T, typename... TArgs>
 	T& AddComponent( TArgs&&... mArgs )
@@ -98,6 +100,15 @@ public:
 		assert( HasComponent<T>() );
 		return *static_cast<T*>( componentArray[GetComponentTypeID<T>()] );
 	}
+	// return true if entitiy is in group
+	bool HasGroup( ecs::Group mGroup ) const noexcept
+	{
+		return groupBitset[mGroup];
+	}
+	// add the entity to a group
+	void AddGroup( ecs::Group mGroup );
+	// delete the group
+	void DelGroup( ecs::Group mGroup );
 
 private:
 	// each call will return a unique id
@@ -118,7 +129,9 @@ private:
 private:
 	bool alive = false;
 	const ecs::EntityID entityID;
+	ECS& manager;
 	std::vector<std::unique_ptr<Component>> components;
 	ecs::ComponentArray componentArray;
 	ecs::ComponentBitset componentBitset;
+	ecs::GroupBitset groupBitset;
 };

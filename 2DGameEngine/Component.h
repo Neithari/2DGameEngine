@@ -58,13 +58,13 @@ struct Player : public Component
 };
 struct Position : public Component
 {
-	Position( float x, float y )
+	Position( const sf::Vector2f& pos )
 		:
-		x(x),
-		y(y)
+		pos( pos )
 	{}
-	float x;
-	float y;
+	sf::Vector2f pos;
+	float X() { return pos.x; }
+	float Y() { return pos.y; }
 };
 struct Sprite : public Component
 {
