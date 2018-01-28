@@ -6,6 +6,7 @@
 
 // forward declare Entity to be able to create a pointer to the parent Entity
 class Entity;
+struct Sprite;
 
 // Component as data only
 struct Component
@@ -20,7 +21,20 @@ struct Component
 
 struct Animation : public Component
 {
-	sf::Rect<int> spriteRect;
+	Animation( const sf::IntRect& rect )
+		:
+		spriteRect( rect ),
+		startRect( rect )
+	{}
+	void Init() override;
+	void Update( const sf::Time& dt ) override;
+	sf::Time lastTime{};
+	Sprite* sprite;
+	int sx = 0;
+	int sy = 0;
+
+	const sf::IntRect startRect;
+	sf::IntRect spriteRect;
 };
 struct Damage : public Component
 {
@@ -62,6 +76,9 @@ struct Position : public Component
 		:
 		pos( pos )
 	{}
+	void Init() override;
+	void Update( const sf::Time& dt ) override;
+	Sprite* sprite;
 	sf::Vector2f pos;
 	float X() { return pos.x; }
 	float Y() { return pos.y; }

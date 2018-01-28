@@ -29,43 +29,18 @@ namespace ecs
 class Entity
 {
 public:
-	Entity( ecs::EntityID id, ECS& manager )
-		:
-		alive( true ),
-		entityID( id ),
-		manager( manager )
-	{
-	}
+	Entity( ecs::EntityID id, ECS& manager );
 
 	// update all components
-	void Update( const sf::Time& dt )
-	{
-		for( auto& c : components )
-		{
-			c->Update( dt );
-		}
-	}
+	void Update( const sf::Time& dt );
 	// draw all components
-	void Draw( sf::RenderWindow& window ) const
-	{
-		for( auto& c : components )
-		{
-			c->Draw( window );
-		}
-	}
+	void Draw( sf::RenderWindow& window ) const;
 	// check if the entity is alive
-	bool IsAlive() const
-	{
-		return alive;
-	}
+	bool IsAlive() const;
 	// destroy the entity
 	void Destroy();
-
 	// get entity id
-	ecs::EntityID GetEntityID() const
-	{
-		return entityID;
-	}
+	ecs::EntityID GetEntityID() const;
 	// factory function
 	template<typename T, typename... TArgs>
 	T& AddComponent( TArgs&&... mArgs )
@@ -98,10 +73,11 @@ public:
 	}
 	// get a specific component
 	template<typename T>
-	Component& GetComponent() const
+	T& GetComponent()
 	{
 		assert( HasComponent<T>() );
-		return *static_cast<T*>( componentArray[GetComponentTypeID<T>()] );
+		Component* ptr( componentArray[GetComponentTypeID<T>()] );
+		return *static_cast<T*>( ptr );
 	}
 	// return true if entitiy is in group
 	bool HasGroup( ecs::Group mGroup ) const noexcept

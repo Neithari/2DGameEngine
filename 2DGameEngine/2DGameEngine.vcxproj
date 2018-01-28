@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="ECSFactory.cpp" />
     <ClCompile Include="Entity.cpp" />

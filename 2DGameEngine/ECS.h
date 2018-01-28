@@ -13,23 +13,11 @@ public:
 	// draw all drawable entities
 	void Draw( sf::RenderWindow& window ) const;
 	// create an Entity
-	Entity& CreateEntity()
-	{
-		Entity* e{ new Entity{ GetUniqueEntityID(), *this } };
-		std::unique_ptr<Entity> uPtr{ e };
-		entities.emplace_back( std::move( uPtr ) );
-		return *e;
-	}
+	Entity& CreateEntity();
 	// put an entity inside a group
-	void AddToGroup( Entity* pEntity, ecs::Group mGroup )
-	{
-		groupedEntities[mGroup].emplace_back( pEntity );
-	}
+	void AddToGroup( Entity* pEntity, ecs::Group mGroup );
 	// get entities that belong to a group
-	std::vector<Entity*>& GetEntitiesByGroup( ecs::Group mGroup )
-	{
-		return groupedEntities[mGroup];
-	}
+	std::vector<Entity*>& GetEntitiesByGroup( ecs::Group mGroup );
 
 private:
 	// erase dead entities

@@ -6,7 +6,6 @@ class ECSFactory
 public:
 	ECSFactory( ECS& manager);
 	Entity& CreateSkeleton();
-	~ECSFactory();
 private:
 	ECS& manager;
 };

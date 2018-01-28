@@ -21,6 +21,30 @@ void ECS::Draw( sf::RenderWindow& window ) const
 	}
 }
 
+// create an Entity
+
+Entity & ECS::CreateEntity()
+{
+	Entity* e{ new Entity{ GetUniqueEntityID(), *this } };
+	std::unique_ptr<Entity> uPtr{ e };
+	entities.emplace_back( std::move( uPtr ) );
+	return *e;
+}
+
+// put an entity inside a group
+
+void ECS::AddToGroup( Entity * pEntity, ecs::Group mGroup )
+{
+	groupedEntities[mGroup].emplace_back( pEntity );
+}
+
+// get entities that belong to a group
+
+std::vector<Entity*>& ECS::GetEntitiesByGroup( ecs::Group mGroup )
+{
+	return groupedEntities[mGroup];
+}
+
 void ECS::Refresh()
 {
 	// remove dead entities and entities within wrong groups
