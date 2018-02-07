@@ -16,6 +16,6 @@ Entity& ECSFactory::CreateSkeleton()
 	skeleton.AddComponent<NPC>();
 	skeleton.AddComponent<Hitpoints>( 10 );
 	skeleton.AddComponent<Animation>( sf::IntRect{ 0,5,66,72 } );
-	//skeleton.AddGroup( 0u );
+	skeleton.AddGroup( 0u );
 	return skeleton;
 }
