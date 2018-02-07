@@ -49,20 +49,19 @@ public:
 		// assert if we already have the Component
 		assert( !HasComponent<T>() );
 		// create a new component of type T on the heap and store it in the component vector
-		T* c( new T( std::forward<TArgs>( mArgs )... ) );
+		auto c( std::make_unique<T>( std::forward<TArgs>( mArgs )... ) );
 		// initiate the parent pointer
 		c->entity = this;
-		//create a unique pointer
-		std::unique_ptr<Component> uPtr{ c };
-		components.emplace_back( std::move( uPtr ) );
-		// store the pointer in our component array
-		componentArray[GetComponentTypeID<T>()] = c;
-		// set the bitset
-		componentBitset[GetComponentTypeID<T>()] = true;
 		// if there is a init function call it
 		c->Init();
+		//create a unique pointer
+		components.emplace_back( std::move( c ) );
+		// store the pointer in our component array
+		componentArray[GetComponentTypeID<T>()] = components.back().get();
+		// set the bitset
+		componentBitset[GetComponentTypeID<T>()] = true;
 		//return a reference to our component
-		return *c;
+		return *static_cast<T*>( components.back().get() );
 	}
 	// return true if an Entity has a specific Component
 	template<typename T>
