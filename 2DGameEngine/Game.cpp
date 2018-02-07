@@ -20,7 +20,7 @@ void Game::Go()
 	// leftover time at the end of each frame
 	sf::Time accumulator;
 
-	auto& skeleton( ecsFactory.CreateSkeleton() );
+	ecsFactory.CreateSkeleton();
 
 	while( gameLoop )
 	{
@@ -94,6 +94,14 @@ void Game::Update( const sf::Time& dt )
 	}
 	
 	shape.move( { x,y } );
+	if( sf::Keyboard::isKeyPressed( sf::Keyboard().Space ) )
+	{
+		auto e = ecs.GetEntitiesByGroup( 0u );
+		if( !e.empty() )
+		{
+			e.back()->DelGroup( 0u );
+		}
+	}
 }
 
 void Game::ComposeFrame()

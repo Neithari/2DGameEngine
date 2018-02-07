@@ -14,8 +14,8 @@ public:
 	void Draw( sf::RenderWindow& window ) const;
 	// create an Entity
 	Entity& CreateEntity();
-	// put an entity inside a group
-	void AddToGroup( Entity* pEntity, ecs::Group mGroup );
+	// put an entity inside a group -> use only from entity
+	void AddToGroup( Entity& entity, ecs::Group mGroup );
 	// get entities that belong to a group
 	std::vector<Entity*>& GetEntitiesByGroup( ecs::Group mGroup );
 

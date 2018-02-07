@@ -23,19 +23,17 @@ void ECS::Draw( sf::RenderWindow& window ) const
 
 // create an Entity
 
-Entity & ECS::CreateEntity()
+Entity& ECS::CreateEntity()
 {
-	Entity* e{ new Entity{ GetUniqueEntityID(), *this } };
-	std::unique_ptr<Entity> uPtr{ e };
-	entities.emplace_back( std::move( uPtr ) );
-	return *e;
+	entities.emplace_back( std::make_unique<Entity>( GetUniqueEntityID(), *this ) );
+	return *entities.back();
 }
 
 // put an entity inside a group
 
-void ECS::AddToGroup( Entity * pEntity, ecs::Group mGroup )
+void ECS::AddToGroup( Entity& entity, ecs::Group mGroup )
 {
-	groupedEntities[mGroup].emplace_back( pEntity );
+	groupedEntities[mGroup].emplace_back( &entity );
 }
 
 // get entities that belong to a group
@@ -47,7 +45,7 @@ std::vector<Entity*>& ECS::GetEntitiesByGroup( ecs::Group mGroup )
 
 void ECS::Refresh()
 {
-	// remove dead entities and entities within wrong groups
+	// remove dead entities and entities within wrong groups from grouped entities
 	for( auto i( 0u ); i < ecs::maxGroups; ++i )
 	{
 		auto& g( groupedEntities[i] );
@@ -55,6 +53,10 @@ void ECS::Refresh()
 		g.erase( std::remove_if(g.begin(), g.end(),
 			[i](Entity* mEntity)
 			{
+				if( !mEntity->HasGroup( i ) )
+				{
+					mEntity->Destroy();
+				}
 				return !mEntity->IsAlive() || !mEntity->HasGroup( i );
 			} ),
 			g.end() );

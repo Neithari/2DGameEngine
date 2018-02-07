@@ -53,7 +53,7 @@ ecs::EntityID Entity::GetEntityID() const
 void Entity::AddGroup( ecs::Group mGroup )
 {
 	groupBitset[mGroup] = true;
-	manager.AddToGroup( this, mGroup );
+	manager.AddToGroup( *this, mGroup );
 }
 
 void Entity::DelGroup( ecs::Group mGroup )
