@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "ResourceManager.h"
 #include "ECS.h"
 #include "ECSFactory.h"
 
@@ -36,6 +37,8 @@ private:
 	sf::Clock time;
 	// game tick
 	const sf::Time tick;
+	// resourceManager
+	ResourceManager resManager;
 	// entity component system
 		// manager
 	ECS ecs;

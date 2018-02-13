@@ -8,7 +8,7 @@ Game::Game()
 	tick( sf::seconds( 1.f / 25.f ) ),
 	shape( 100.f ),
 	dir( RIGHT ),
-	ecsFactory( ecs )
+	ecsFactory( ecs, resManager )
 {
 	shape.setFillColor( sf::Color::Green );
 	shape.setPosition( 250.f, 100.f );
@@ -96,10 +96,10 @@ void Game::Update( const sf::Time& dt )
 	shape.move( { x,y } );
 	if( sf::Keyboard::isKeyPressed( sf::Keyboard().Space ) )
 	{
-		auto e = ecs.GetEntitiesByGroup( 0u );
+		auto e = ecs.GetEntitiesByGroup( ecs::ECSGroups::PC );
 		if( !e.empty() )
 		{
-			e.back()->DelGroup( 0u );
+			e.back()->DelGroup( ecs::ECSGroups::PC );
 		}
 	}
 }

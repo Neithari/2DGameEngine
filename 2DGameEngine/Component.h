@@ -83,19 +83,20 @@ struct Position : public Component
 	float X() { return pos.x; }
 	float Y() { return pos.y; }
 };
+// declare a texture in the ResourceManager and give it to the Sprite component with a ref
 struct Sprite : public Component
 {
-	Sprite( const std::string& file )
+	Sprite( const sf::Texture& texture )
+		:
+		texture( texture )
 	{
-		bool loaded = texture.loadFromFile( file );
-		assert( loaded );
 		sprite.setTexture( texture );
 	}
 	void Draw( sf::RenderWindow& window ) const override
 	{
 		window.draw( sprite );
 	}
-	sf::Texture texture;
+	const sf::Texture& texture;
 	sf::Sprite sprite;
 };
  struct Velocity : public Component

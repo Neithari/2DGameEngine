@@ -100,7 +100,7 @@ private:
 	ecs::ComponentID GetComponentTypeID() noexcept
 	{
 		static_assert( std::is_base_of<Component, T>::value, "T must inherit from Component" );
-		static ecs::ComponentID typeID{ GetUniqueComponentID() };;
+		static ecs::ComponentID typeID{ GetUniqueComponentID() };
 		return typeID;
 	}
 	

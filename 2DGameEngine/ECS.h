@@ -3,8 +3,18 @@
 #include "Entity.h"
 #include <vector>
 #include <memory>
+
+// enum for entity groups
+namespace ecs
+{
+	enum ECSGroups : ecs::Group
+	{
+		NPC,
+		PC,
+		Environment
+	};
+}
 // Entity Manager
-// TODO: get rid of the normal pointers and use smart pointers
 class ECS
 {
 public:
