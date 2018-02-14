@@ -1,14 +1,17 @@
 #pragma once
-#include "ECS.h"
+#include "EntityManager.h"
 #include "ResourceManager.h"
+#include "Definitions.h"
 
-class ECSFactory
+namespace ecs
 {
-public:
-	ECSFactory( ECS& ecsManager, ResourceManager& resManager );
-	Entity& CreateSkeleton();
-private:
-	ECS& ecsManager;
-	ResourceManager& resManager;
-};
-
+	class ECSFactory
+	{
+	public:
+		ECSFactory( EntityManager& entityManager, ResourceManager& resManager );
+		Entity& CreateSkeleton();
+	private:
+		EntityManager& entityManager;
+		ResourceManager& resManager;
+	};
+}

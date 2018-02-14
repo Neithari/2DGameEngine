@@ -1,62 +1,64 @@
 #include "Entity.h"
-#include "ECS.h"
+#include "EntityManager.h"
 
-
-
-// check if the entity is alive
-
-Entity::Entity( ecs::EntityID id, ECS & manager )
-	:
-	alive( true ),
-	entityID( id ),
-	manager( manager )
+namespace ecs
 {
-}
 
-// update all components
+	// check if the entity is alive
 
-void Entity::Update( const sf::Time & dt )
-{
-	for( auto& c : components )
+	Entity::Entity( EntityID id, EntityManager& manager )
+		:
+		alive( true ),
+		entityID( id ),
+		manager( manager )
 	{
-		c->Update( dt );
 	}
-}
 
-// draw all components
+	// update all components
 
-void Entity::Draw( sf::RenderWindow & window ) const
-{
-	for( auto& c : components )
+	void Entity::Update( const float tick )
 	{
-		c->Draw( window );
+		for( auto& c : components )
+		{
+			c->Update( tick );
+		}
 	}
-}
 
-bool Entity::IsAlive() const
-{
-	return alive;
-}
+	// draw all components
 
-void Entity::Destroy()
-{
-	alive = false;
-}
+	void Entity::Draw( sf::RenderWindow& window, const float interpolation ) const
+	{
+		for( auto& c : components )
+		{
+			c->Draw( window, interpolation );
+		}
+	}
 
-// get entity id
+	bool Entity::IsAlive() const
+	{
+		return alive;
+	}
 
-ecs::EntityID Entity::GetEntityID() const
-{
-	return entityID;
-}
+	void Entity::Destroy()
+	{
+		alive = false;
+	}
 
-void Entity::AddGroup( ecs::Group mGroup )
-{
-	groupBitset[mGroup] = true;
-	manager.AddToGroup( *this, mGroup );
-}
+	// get entity id
 
-void Entity::DelGroup( ecs::Group mGroup )
-{
-	groupBitset[mGroup] = false;
+	EntityID Entity::GetEntityID() const
+	{
+		return entityID;
+	}
+
+	void Entity::AddGroup( Group mGroup )
+	{
+		groupBitset[mGroup] = true;
+		manager.AddToGroup( *this, mGroup );
+	}
+
+	void Entity::DelGroup( Group mGroup )
+	{
+		groupBitset[mGroup] = false;
+	}
 }

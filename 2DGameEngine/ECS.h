@@ -1,44 +1,21 @@
 #pragma once
+#include <SFML\Graphics.hpp>
+#include <bitset>
+#include "ECSFactory.h"
+#include "EntityManager.h"
+#include "ResourceManager.h"
 
-#include "Entity.h"
-#include <vector>
-#include <memory>
-
-// enum for entity groups
-namespace ecs
-{
-	enum ECSGroups : ecs::Group
-	{
-		NPC,
-		PC,
-		Environment
-	};
-}
-// Entity Manager
+// Entity Component System
 class ECS
 {
 public:
-	// update all entities
-	void Update( const sf::Time& dt );
-	// draw all drawable entities
-	void Draw( sf::RenderWindow& window ) const;
-	// create an Entity
-	Entity& CreateEntity();
-	// put an entity inside a group -> use only from entity
-	void AddToGroup( Entity& entity, ecs::Group mGroup );
-	// get entities that belong to a group
-	std::vector<Entity*>& GetEntitiesByGroup( ecs::Group mGroup );
+	void Update( const float tick );
+	void Draw( sf::RenderWindow& window, const float interpolation );
+	void CreateEntities();
+public:
+	ecs::EntityManager entityManager;
+	ResourceManager resManager;
+	ecs::ECSFactory factory{ entityManager, resManager };
+private:
 
-private:
-	// erase dead entities
-	void Refresh();
-	// returns a unique id for each call
-	ecs::EntityID GetUniqueEntityID() noexcept
-	{
-		static ecs::EntityID lastID{ 0u };
-		return lastID++;
-	}
-private:
-	std::vector<std::unique_ptr<Entity>> entities;
-	std::array<std::vector<Entity*>, ecs::maxGroups> groupedEntities;
 };

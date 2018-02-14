@@ -3,12 +3,10 @@
 Game::Game()
 	:
 	gameLoop( false ),
-	gameName( "2D Game Engine" ),
-	window( sf::VideoMode( screenWidth, screenHeight ), gameName ),
-	tick( sf::seconds( 1.f / 25.f ) ),
+	window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), GAME_NAME ),
+	tick( 1.f / 60.f ),
 	shape( 100.f ),
-	dir( RIGHT ),
-	ecsFactory( ecs, resManager )
+	dir( RIGHT )
 {
 	shape.setFillColor( sf::Color::Green );
 	shape.setPosition( 250.f, 100.f );
@@ -17,40 +15,49 @@ Game::Game()
 void Game::Go()
 {
 	gameLoop = true;
-	// leftover time at the end of each frame
-	sf::Time accumulator;
 
-	ecsFactory.CreateSkeleton();
+	float newTime, frameTime, interpolation;
+	float accumulator = 0.0f;
+	float currentTime = clock.getElapsedTime().asSeconds();
+
+	// create entities
+	ecs.CreateEntities();
 
 	while( gameLoop )
 	{
 		// handle events
 		HandleInput();
-		// update everything
-		accumulator += time.restart();
+		// setup timers and update using them
+		newTime = clock.getElapsedTime().asSeconds();
+		frameTime = newTime - currentTime;
+		currentTime = newTime;
+		accumulator += frameTime;
 
 		while( accumulator >= tick )
 		{
 			Update( tick );
-			ecs.Update( tick );
 			accumulator -= tick;
 		}
+		interpolation = accumulator / tick;
 		// clear the window to prep it for next frame
 		window.clear();
 		// compose the frame with all drawing code
-		ComposeFrame();
+		ComposeFrame( interpolation );
 		// show render on the screen
 		window.display();
 	}
 }
 
-void Game::Update( const sf::Time& dt )
+void Game::Update( const float tick )
 {
+	// update the ECS
+	ecs.Update( tick );
+
 	float speedPerSec = 200.0f;
 	sf::Rect<float> bounds = sf::Rect<float>{ 100.0f, 50.0f, 500.0f, 350.0f };
 
-	float x = speedPerSec * dt.asSeconds();
-	float y = speedPerSec * dt.asSeconds();
+	float y = speedPerSec * tick;
+	float x = speedPerSec * tick;
 	auto pos = shape.getPosition();
 
 	if( pos.x > bounds.width )
@@ -94,20 +101,12 @@ void Game::Update( const sf::Time& dt )
 	}
 	
 	shape.move( { x,y } );
-	if( sf::Keyboard::isKeyPressed( sf::Keyboard().Space ) )
-	{
-		auto e = ecs.GetEntitiesByGroup( ecs::ECSGroups::PC );
-		if( !e.empty() )
-		{
-			e.back()->DelGroup( ecs::ECSGroups::PC );
-		}
-	}
 }
 
-void Game::ComposeFrame()
+void Game::ComposeFrame( const float interpolation )
 {
 	window.draw( shape );
-	ecs.Draw( window );
+	ecs.Draw( window, interpolation );
 }
 
 void Game::HandleInput()
