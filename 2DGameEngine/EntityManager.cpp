@@ -1,6 +1,7 @@
 #include "EntityManager.h"
 #include <algorithm>
 #include <utility>
+#include <iostream>
 
 namespace ecs
 {
@@ -49,7 +50,15 @@ namespace ecs
 
 	void EntityManager::DestroyEntity( EntityID eID )
 	{
-		entities.at( eID )->Destroy();
+		try
+		{
+			entities.at( eID )->Destroy();
+		}
+		catch( const std::out_of_range )
+		{
+			std::cout << "There is no entity with id: " << eID << std::endl;
+			throw;
+		}
 	}
 
 	void EntityManager::Refresh()

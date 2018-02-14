@@ -12,10 +12,8 @@ public:
 	void Update( const float tick );
 	void Draw( sf::RenderWindow& window, const float interpolation );
 	void CreateEntities();
-public:
+private:
 	ecs::EntityManager entityManager;
 	ResourceManager resManager;
 	ecs::ECSFactory factory{ entityManager, resManager };
-private:
-
 };
