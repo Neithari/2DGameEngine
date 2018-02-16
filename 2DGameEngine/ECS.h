@@ -4,6 +4,7 @@
 #include "ECSFactory.h"
 #include "EntityManager.h"
 #include "ResourceManager.h"
+#include "SystemManager.h"
 
 // Entity Component System
 class ECS
@@ -16,4 +17,7 @@ private:
 	ecs::EntityManager entityManager;
 	ResourceManager resManager;
 	ecs::ECSFactory factory{ entityManager, resManager };
+	ecs::RenderSystem renderSystem{ entityManager };
+	ecs::InputSystem input{ entityManager };
+	ecs::CollisionSystem collisionSystem{ entityManager };
 };

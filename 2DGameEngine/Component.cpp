@@ -3,48 +3,63 @@
 
 namespace ecs
 {
-	void Animation::Init()
-	{
-		sprite = &entity->GetComponent<Sprite>();
-	}
-
-	void Animation::Update( const float tick )
-	{
-		if( lastTime >= 1.0f )
-		{
-			if( sx >= 4 )
-			{
-				spriteRect.left = startRect.left;
-				sx = 0;
-				sy++;;
-			}
-			if( sy >= 4 )
-			{
-				spriteRect.top = startRect.top;
-				sy = 0;
-			}
-			spriteRect.left = sx * spriteRect.width;
-			spriteRect.top = sy * ( spriteRect.height - startRect.top );
-			sx++;
-
-			float reset = 0.0f;
-			lastTime = reset;
-		}
-		lastTime += tick;
-		sprite->sprite.setTextureRect( spriteRect );
-	}
-
-	void Position::Init()
-	{
-		sprite = &entity->GetComponent<Sprite>();
-	}
-
-	void Position::Update( const float tick )
-	{
-		sprite->sprite.setPosition( pos );
-	}
 	void Drawable::Init()
 	{
-		isDrawable = true;
+		draw = true;
+		entity->AddGroup( ECSSystems::RenderGroup );
+	}
+	void Drawable::Toggle()
+	{
+		if( draw )
+		{
+			draw = false;
+			entity->DelGroup( ECSSystems::RenderGroup );
+		}
+		else
+		{
+			draw = true;
+			entity->AddGroup( ECSSystems::CollisionGroup );
+		}
+	}
+	void Player::Init()
+	{
+		player = true;
+	}
+	void Sprite::SetTexture( const sf::Texture & texture )
+	{
+		sprite.setTexture( texture );
+	}
+	void Sprite::SetRect( const sf::Vector2i & pos, const sf::Vector2i dim )
+	{
+		textureRect.left = pos.x;
+		textureRect.top = pos.y;
+		textureRect.width = dim.x;
+		textureRect.height = dim.y;
+	}
+	void Input::Init()
+	{
+		handleInput = true;
+		entity->AddGroup( ECSSystems::InputGroup );
+	}
+	void Heading::Init()
+	{
+		direction = Direction::DOWN;
+		entity->AddGroup( ECSSystems::PhysicsGroup );
+	}
+	void Environment::Init()
+	{
+		environment = true;
+	}
+	void Collision::Init()
+	{
+		entity->AddGroup( ECSSystems::CollisionGroup );
+	}
+	void Collision::Terminate()
+	{
+		entity->DelGroup( ECSSystems::CollisionGroup );
+	}
+	void Enemy::Init()
+	{
+		enemy = true;
 	}
 }

@@ -2,15 +2,17 @@
 
 void ECS::Update( const float tick )
 {
-	entityManager.Update( tick );
+	input.Update( tick );
+	collisionSystem.CheckCollisions();
 }
 
-void ECS::Draw( sf::RenderWindow & window, const float interpolation )
+void ECS::Draw( sf::RenderWindow& window, const float interpolation )
 {
-	entityManager.Draw( window, interpolation );
+	renderSystem.Draw( window, interpolation );
 }
 
 void ECS::CreateEntities()
 {
 	factory.CreateSkeleton();
+	factory.CreatePlayer();
 }

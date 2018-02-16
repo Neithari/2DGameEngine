@@ -11,16 +11,15 @@ namespace ecs
 	class EntityManager
 	{
 	public:
-		// update all entities
 		void Update( const float tick );
-		// draw all drawable entities
-		void Draw( sf::RenderWindow& window, const float interpolation ) const;
 		// create an Entity
 		Entity& CreateEntity();
+		// get all entities to iterate over them
+		std::vector<std::unique_ptr<Entity>>& GetEntities();
 		// put an entity inside a group -> use only from entity
-		void AddToGroup( Entity& entity, Group mGroup );
+		void AddToGroup( Entity& entity, Group group );
 		// get entities that belong to a group
-		std::vector<Entity*>& GetEntitiesByGroup( Group mGroup );
+		std::vector<Entity*>& GetEntitiesByGroup( Group group );
 		// destroy an Entity by ID
 		void DestroyEntity( EntityID eID );
 

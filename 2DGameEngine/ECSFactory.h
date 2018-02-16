@@ -10,6 +10,7 @@ namespace ecs
 	public:
 		ECSFactory( EntityManager& entityManager, ResourceManager& resManager );
 		Entity& CreateSkeleton();
+		Entity& CreatePlayer();
 	private:
 		EntityManager& entityManager;
 		ResourceManager& resManager;

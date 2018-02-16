@@ -8,8 +8,6 @@ namespace ecs
 {
 	// forward declare Entity to be able to create a pointer to the parent Entity
 	class Entity;
-	// forward declare Sprite because it is used in Animation
-	struct Sprite;
 
 	// Component as data only
 	struct Component
@@ -17,11 +15,8 @@ namespace ecs
 		Entity* entity;
 
 		virtual void Init() {}
-		virtual void Update( const float tick ) {}
-		virtual void Draw( sf::RenderWindow& window, const float interpolation ) const {}
-		virtual ~Component() {}
+		virtual ~Component() {};
 	};
-
 	struct Animation : public Component
 	{
 		Animation( const sf::IntRect& rect )
@@ -29,15 +24,35 @@ namespace ecs
 			spriteRect( rect ),
 			startRect( rect )
 		{}
-		void Init() override;
-		void Update( const float tick ) override;
-		float lastTime{};
-		Sprite* sprite;
-		int sx = 0;
-		int sy = 0;
 
 		const sf::IntRect startRect;
 		sf::IntRect spriteRect;
+	};
+	struct Collision : public Component
+	{
+		void Init() override;
+		// remove the entity from the CollisionSystem
+		void Terminate();
+
+		sf::Vector2i dim;
+	};
+	struct Player : public Component
+	{
+		void Init() override;
+
+		bool player;
+	};
+	struct Enemy : public Component
+	{
+		void Init() override;
+
+		bool enemy;
+	};
+	struct Environment : public Component
+	{
+		void Init() override;
+
+		bool environment;
 	};
 	struct Damage : public Component
 	{
@@ -46,11 +61,21 @@ namespace ecs
 	struct Drawable : public Component
 	{
 		void Init() override;
-		bool isDrawable;
+		void Toggle();
+
+		bool draw;
 	};
-	struct Hitbox : public Component
+	struct Heading : public Component
 	{
-		sf::Rect<int> hitBox;
+		void Init() override;
+
+		enum Direction
+		{
+			DOWN,
+			UP,
+			LEFT,
+			Right
+		}direction;
 	};
 	struct Hitpoints : public Component
 	{
@@ -59,7 +84,14 @@ namespace ecs
 			hp( hp )
 		{
 		}
+
 		int hp;
+	};
+	struct Input : public Component
+	{
+		void Init() override;
+
+		bool handleInput;
 	};
 	struct Name : public Component
 	{
@@ -68,44 +100,34 @@ namespace ecs
 			name( name )
 		{
 		}
+
 		std::string name;
-	};
-	struct Player : public Component
-	{
-		bool isPlayer = true;
 	};
 	struct Position : public Component
 	{
-		Position( const sf::Vector2f& pos )
-			:
-			pos( pos )
-		{}
-		void Init() override;
-		void Update( const float tick ) override;
-		Sprite* sprite;
-		sf::Vector2f pos;
 		float X() { return pos.x; }
 		float Y() { return pos.y; }
+		void SetX( float x ) { pos.x = x; }
+		void SetY( float y ) { pos.y = y; }
+		void SetPos( float x, float y )
+		{ 
+			SetX( x );
+			SetY( y );
+		}
+
+		sf::Vector2f pos;
 	};
 	// declare a texture in the ResourceManager and give it to the Sprite component with a ref
 	struct Sprite : public Component
 	{
-		Sprite( const sf::Texture& texture )
-			:
-			texture( texture )
-		{
-			sprite.setTexture( texture );
-		}
-		void Draw( sf::RenderWindow& window, const float interpolation ) const override
-		{
-			window.draw( sprite );
-		}
-		const sf::Texture& texture;
+		void SetTexture( const sf::Texture& texture );
+		void SetRect( const sf::Vector2i& pos, const sf::Vector2i dim );
+
 		sf::Sprite sprite;
+		sf::IntRect textureRect;
 	};
 	struct Velocity : public Component
 	{
-		float vx;
-		float vy;
+		float vel;
 	};
 }

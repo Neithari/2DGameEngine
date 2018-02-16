@@ -14,26 +14,6 @@ namespace ecs
 	{
 	}
 
-	// update all components
-
-	void Entity::Update( const float tick )
-	{
-		for( auto& c : components )
-		{
-			c->Update( tick );
-		}
-	}
-
-	// draw all components
-
-	void Entity::Draw( sf::RenderWindow& window, const float interpolation ) const
-	{
-		for( auto& c : components )
-		{
-			c->Draw( window, interpolation );
-		}
-	}
-
 	bool Entity::IsAlive() const
 	{
 		return alive;
@@ -51,14 +31,14 @@ namespace ecs
 		return entityID;
 	}
 
-	void Entity::AddGroup( Group mGroup )
+	void Entity::AddGroup( Group group )
 	{
-		groupBitset[mGroup] = true;
-		manager.AddToGroup( *this, mGroup );
+		groupBitset[group] = true;
+		manager.AddToGroup( *this, group );
 	}
 
-	void Entity::DelGroup( Group mGroup )
+	void Entity::DelGroup( Group group )
 	{
-		groupBitset[mGroup] = false;
+		groupBitset[group] = false;
 	}
 }

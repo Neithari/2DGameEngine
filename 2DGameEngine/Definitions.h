@@ -15,12 +15,13 @@ namespace ecs
 	constexpr std::size_t maxGroups{ 32 };
 	using Group = std::size_t;
 	using GroupBitset = std::bitset<maxGroups>;
-	// enum for entity groups
-	enum ECSGroups : Group
+	// enum for entity groups -> each system has a group to iterate over
+	enum ECSSystems : Group
 	{
-		NPC,
-		PC,
-		Environment
+		RenderGroup,
+		CollisionGroup,
+		PhysicsGroup,
+		InputGroup
 	};
 }
 

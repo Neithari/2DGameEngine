@@ -5,23 +5,24 @@
 
 void ResourceManager::AddTexture( const std::string& name, const std::string& filename )
 {
-	// assert triggers if a texture with the name already exists
-	assert( textures.find( name ) == textures.end() );
-	
-	sf::Texture texture;
-	// if the file can not be loaded then load a default magenta texture and output to console
-	if( !texture.loadFromFile( filename ) )
+	// skip if a texture with the name already exists
+	if( textures.find( name ) == textures.end() )
 	{
-		const unsigned int width = 100;
-		const unsigned int height = 100;
-		texture.create( width, height );
-		sf::Image defaultTexture;
-		defaultTexture.create( width, height, sf::Color::Magenta );
-		texture.update( defaultTexture );
-		
-		std::cout << filename << " could not be loaded" << std::endl;
+		sf::Texture texture;
+		// if the file can not be loaded then load a default magenta texture and output to console
+		if( !texture.loadFromFile( filename ) )
+		{
+			const unsigned int width = 100;
+			const unsigned int height = 100;
+			texture.create( width, height );
+			sf::Image defaultTexture;
+			defaultTexture.create( width, height, sf::Color::Magenta );
+			texture.update( defaultTexture );
+
+			std::cout << filename << " could not be loaded" << std::endl;
+		}
+		textures.emplace( name, std::move( texture ) );
 	}
-	textures.emplace( name, std::move( texture ) );
 }
 
 sf::Texture& ResourceManager::GetTexture( const std::string& name )

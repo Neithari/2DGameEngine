@@ -20,11 +20,6 @@ namespace ecs
 	public:
 		Entity( EntityID id, EntityManager& manager );
 
-		// update all components
-		void Update( const float tick );
-		// draw all components
-		void Draw( sf::RenderWindow& window, const float interpolation ) const;
-		// check if the entity is alive
 		bool IsAlive() const;
 		// destroy the entity
 		void Destroy();
@@ -68,17 +63,17 @@ namespace ecs
 			return *static_cast<T*>( ptr );
 		}
 		// return true if entitiy is in group
-		bool HasGroup( Group mGroup ) const noexcept
+		bool HasGroup( Group group ) const noexcept
 		{
-			return groupBitset[mGroup];
+			return groupBitset[group];
 		}
 		// add the entity to a group
-		void AddGroup( Group mGroup );
+		void AddGroup( Group group );
 		// delete the group
-		void DelGroup( Group mGroup );
+		void DelGroup( Group group );
 
 	private:
-		// each call will return a unique id
+		// each call will return a unique id, only call from GetComponentTypeID
 		ComponentID GetUniqueComponentID() noexcept
 		{
 			static ComponentID lastID{ 0u };

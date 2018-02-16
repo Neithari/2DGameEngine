@@ -5,28 +5,12 @@
 
 namespace ecs
 {
+	// create an Entity
 
 	void EntityManager::Update( const float tick )
 	{
 		Refresh();
-		for( auto& e : entities )
-		{
-			e->Update( tick );
-		}
 	}
-
-	void EntityManager::Draw( sf::RenderWindow& window, const float interpolation ) const
-	{
-		for( auto& e : entities )
-		{
-			if( e->HasComponent<Drawable>() )
-			{
-				e->Draw( window, interpolation );
-			}
-		}
-	}
-
-	// create an Entity
 
 	Entity& EntityManager::CreateEntity()
 	{
@@ -34,18 +18,23 @@ namespace ecs
 		return *entities.back();
 	}
 
+	std::vector<std::unique_ptr<Entity>>& EntityManager::GetEntities()
+	{
+		return entities;
+	}
+
 	// put an entity inside a group
 
-	void EntityManager::AddToGroup( Entity& entity, Group mGroup )
+	void EntityManager::AddToGroup( Entity& entity, Group group )
 	{
-		groupedEntities[mGroup].emplace_back( &entity );
+		groupedEntities[group].emplace_back( &entity );
 	}
 
 	// get entities that belong to a group
 
-	std::vector<Entity*>& EntityManager::GetEntitiesByGroup( Group mGroup )
+	std::vector<Entity*>& EntityManager::GetEntitiesByGroup( Group group )
 	{
-		return groupedEntities[mGroup];
+		return groupedEntities[group];
 	}
 
 	void EntityManager::DestroyEntity( EntityID eID )
@@ -69,21 +58,17 @@ namespace ecs
 			auto& g( groupedEntities[i] );
 
 			g.erase( std::remove_if( g.begin(), g.end(),
-				[i]( Entity* mEntity )
+				[i]( const Entity* pEntity )
 			{
-				if( !mEntity->HasGroup( i ) )
-				{
-					mEntity->Destroy();
-				}
-				return !mEntity->IsAlive() || !mEntity->HasGroup( i );
+				return !pEntity->IsAlive() || !pEntity->HasGroup( i );
 			} ),
 				g.end() );
 		}
 		// remove dead entities
 		entities.erase( std::remove_if( entities.begin(), entities.end(),
-			[]( const std::unique_ptr<Entity>& mEntity )
+			[]( const std::unique_ptr<Entity>& entity )
 		{
-			return !mEntity->IsAlive();
+			return !entity->IsAlive();
 		} ),
 			entities.end() );
 	}
