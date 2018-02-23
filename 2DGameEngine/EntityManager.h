@@ -1,9 +1,13 @@
 #pragma once
 
+#include "Definitions.h"
 #include "Entity.h"
+#include "Component.h"
 #include <vector>
 #include <memory>
-#include "Definitions.h"
+#include <array>
+#include <utility>
+#include <iostream>
 
 namespace ecs
 {
@@ -13,27 +17,93 @@ namespace ecs
 	public:
 		void Update( const float tick );
 		// create an Entity
-		Entity& CreateEntity();
+		const EntityID CreateEntity();
 		// get all entities to iterate over them
-		std::vector<std::unique_ptr<Entity>>& GetEntities();
-		// put an entity inside a group -> use only from entity
-		void AddToGroup( Entity& entity, Group group );
-		// get entities that belong to a group
-		std::vector<Entity*>& GetEntitiesByGroup( Group group );
+		std::vector<Entity>& GetEntities();
 		// destroy an Entity by ID
 		void DestroyEntity( EntityID eID );
-
+		// add component to entity
+		template<typename C>
+		void AddComponent( EntityID eID )
+		{
+			static_assert( std::is_base_of<Component, C>::value, "C must inherit from Component" );
+			auto cID = GetComponentTypeID<C>();
+			// if there is not already a container for the component create it
+			if( components.size() <= cID )
+			{
+				components.emplace_back();
+			}
+			try
+			{
+				if( components.at( cID ).at( eID ) == nullptr )
+				{
+					components.at( cID ).at( eID ) = std::move( std::make_shared<C>() );
+				}
+				components.at( cID ).at( eID )->entity = eID;
+			}
+			catch( const std::out_of_range )
+			{
+				std::cout << "There is no component or entity with id: " << eID << std::endl;
+				throw;
+			}
+		}
+		// get component for entity
+		template<typename C>
+		std::shared_ptr<C> GetComponent( EntityID eID )
+		{
+			static_assert( std::is_base_of<Component, C>::value, "C must inherit from Component" );
+			auto cID = GetComponentTypeID<C>();
+			try
+			{
+				return std::static_pointer_cast<C>( components.at( cID ).at( eID ) );
+			}
+			catch( const std::out_of_range )
+			{
+				std::cout << "There is no component or entity with id: " << eID << std::endl;
+				throw;
+			}
+		}
+		// get component array
+		template<typename C>
+		ComponentArray& GetComponentArray()
+		{
+			static_assert( std::is_base_of<Component, C>::value, "C must inherit from Component" );
+			auto cID = GetComponentTypeID<C>();
+			try
+			{
+				return components.at( cID );
+			}
+			catch( const std::out_of_range )
+			{
+				std::cout << "There is no component with id: " << cID << std::endl;
+				throw;
+			}
+		}
 	private:
 		// erase dead entities
-		void Refresh();
+		//void Refresh();
 		// returns a unique id for each call
 		EntityID GetUniqueEntityID() noexcept
 		{
 			static EntityID lastID{ 0u };
 			return lastID++;
+		}	
+		// each call will return a unique id, only call from GetComponentTypeID
+		ComponentID GetUniqueComponentID() noexcept
+		{
+			static ComponentID lastID{ 0u };
+			return lastID++;
+		}
+		// each call with the same T will return the same id
+		template<typename C>
+		ComponentID GetComponentTypeID() noexcept
+		{
+			static_assert( std::is_base_of<Component, C>::value, "C must inherit from Component" );
+			static ComponentID typeID{ GetUniqueComponentID() };
+			return typeID;
 		}
 	private:
-		std::vector<std::unique_ptr<Entity>> entities;
-		std::array<std::vector<Entity*>, maxGroups> groupedEntities;
+		std::vector<Entity> entities;
+		std::vector<ComponentArray> components;
 	};
 }

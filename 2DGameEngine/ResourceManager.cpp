@@ -3,10 +3,10 @@
 #include <cassert>
 #include <iostream>
 
-void ResourceManager::AddTexture( const std::string& name, const std::string& filename )
+void ResourceManager::AddTexture( const ecs::Texture rID, const std::string& filename )
 {
 	// skip if a texture with the name already exists
-	if( textures.find( name ) == textures.end() )
+	if( textures.find( rID ) == textures.end() )
 	{
 		sf::Texture texture;
 		// if the file can not be loaded then load a default magenta texture and output to console
@@ -21,97 +21,97 @@ void ResourceManager::AddTexture( const std::string& name, const std::string& fi
 
 			std::cout << filename << " could not be loaded" << std::endl;
 		}
-		textures.emplace( name, std::move( texture ) );
+		textures.emplace( rID, std::move( texture ) );
 	}
 }
 
-sf::Texture& ResourceManager::GetTexture( const std::string& name )
+sf::Texture& ResourceManager::GetTexture( const ecs::Texture rID )
 {
 	try
 	{
-		return textures.at( name );
+		return textures.at( rID );
 	}
 	catch( const std::out_of_range )
 	{
-		std::cout << "There is no texture with name: " << name << std::endl;
+		std::cout << "There is no texture with id: " << static_cast<ecs::ResID>( rID ) << std::endl;
 		throw;
 	}
 }
 
-void ResourceManager::AddFont( const std::string& name, const std::string& filename )
+void ResourceManager::AddFont( const ecs::Font rID, const std::string& filename )
 {
 	// assert triggers if a font with the name already exists
-	assert( fonts.find( name ) == fonts.end() );
+	assert( fonts.find( rID ) == fonts.end() );
 
 	sf::Font font;
 	if( !font.loadFromFile( filename ) )
 	{
 		throw std::runtime_error( filename + " could not be loaded" );
 	}
-	fonts.emplace( name, std::move( font ) );
+	fonts.emplace( rID, std::move( font ) );
 }
 
-sf::Font& ResourceManager::GetFont( const std::string& name )
+sf::Font& ResourceManager::GetFont( const ecs::Font rID )
 {
 	try
 	{
-		return fonts.at( name );
+		return fonts.at( rID );
 	}
 	catch( const std::out_of_range )
 	{
-		std::cout << "There is no font with name: " << name << std::endl;
+		std::cout << "There is no font with id: " << static_cast<ecs::ResID>( rID ) << std::endl;
 		throw;
 	}
 }
 
-void ResourceManager::AddSoundBuffer( const std::string& name, const std::string& filename )
+void ResourceManager::AddSoundBuffer( const ecs::Sound rID, const std::string& filename )
 {
 	// assert triggers if a sound with the name already exists
-	assert( soundBuffers.find( name ) == soundBuffers.end() );
+	assert( soundBuffers.find( rID ) == soundBuffers.end() );
 
 	sf::SoundBuffer soundBuffer;
 	if( !soundBuffer.loadFromFile( filename ) )
 	{
 		throw std::runtime_error( filename + " could not be loaded" );
 	}
-	soundBuffers.emplace( name, std::move( soundBuffer ) );
+	soundBuffers.emplace( rID, std::move( soundBuffer ) );
 }
 
-sf::SoundBuffer& ResourceManager::GetSoundBuffer( const std::string& name )
+sf::SoundBuffer& ResourceManager::GetSoundBuffer( const ecs::Sound rID )
 {
 	try
 	{
-		return soundBuffers.at( name );
+		return soundBuffers.at( rID );
 	}
 	catch( const std::out_of_range )
 	{
-		std::cout << "There is no soundbuffer with name: " << name << std::endl;
+		std::cout << "There is no soundbuffer with id: " << static_cast<ecs::ResID>( rID ) << std::endl;
 		throw;
 	}
 }
 
-void ResourceManager::AddMusic( const std::string& name, const std::string& filename )
+void ResourceManager::AddMusic( const ecs::Music rID, const std::string& filename )
 {
 	// assert triggers if a texture with the name already exists
-	assert( music.find( name ) == music.end() );
+	assert( music.find( rID ) == music.end() );
 
 	auto pMusic = std::make_unique<sf::Music>();
 	if( !pMusic->openFromFile( filename ) )
 	{
 		throw std::runtime_error( filename + " could not be loaded" );
 	}
-	music.emplace( name, std::move( pMusic ) );
+	music.emplace( rID, std::move( pMusic ) );
 }
 
-sf::Music& ResourceManager::GetMusic( const std::string& name )
+sf::Music& ResourceManager::GetMusic( const ecs::Music rID )
 {
 	try
 	{
-		return *music.at( name );
+		return *music.at( rID );
 	}
 	catch( const std::out_of_range )
 	{
-		std::cout << "There is no music with name: " << name << std::endl;
+		std::cout << "There is no music with id: " << static_cast<ecs::ResID>( rID ) << std::endl;
 		throw;
 	}
 }

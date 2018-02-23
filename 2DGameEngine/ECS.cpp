@@ -13,6 +13,10 @@ void ECS::Draw( sf::RenderWindow& window, const float interpolation )
 
 void ECS::CreateEntities()
 {
-	factory.CreateSkeleton();
+	// create environment
+	factory.CreateEnvironment();
+	// create player
 	factory.CreatePlayer();
+	// create enemies
+	factory.CreateCuphead(2);
 }

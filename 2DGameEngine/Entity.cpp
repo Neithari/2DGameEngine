@@ -1,16 +1,11 @@
 #include "Entity.h"
-#include "EntityManager.h"
 
 namespace ecs
 {
-
-	// check if the entity is alive
-
-	Entity::Entity( EntityID id, EntityManager& manager )
+	Entity::Entity( EntityID id )
 		:
 		alive( true ),
-		entityID( id ),
-		manager( manager )
+		entityID( id )
 	{
 	}
 
@@ -24,21 +19,8 @@ namespace ecs
 		alive = false;
 	}
 
-	// get entity id
-
 	EntityID Entity::GetEntityID() const
 	{
 		return entityID;
-	}
-
-	void Entity::AddGroup( Group group )
-	{
-		groupBitset[group] = true;
-		manager.AddToGroup( *this, group );
-	}
-
-	void Entity::DelGroup( Group group )
-	{
-		groupBitset[group] = false;
 	}
 }

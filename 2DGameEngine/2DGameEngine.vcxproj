@@ -137,7 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Component.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="ECSFactory.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -159,6 +158,7 @@
     <ClInclude Include="SystemManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Sprite\Cuphead.png" />
     <Image Include="Sprite\Skeleton.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

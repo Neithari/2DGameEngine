@@ -5,101 +5,72 @@ namespace ecs
 	CollisionSystem::CollisionSystem( EntityManager& eManager )
 		:
 		entityManager( eManager )
-	{}
+	{
+	}
 	void CollisionSystem::CheckCollisions()
 	{
-		// get all entities that can collide with something
-		auto group = entityManager.GetEntitiesByGroup( ECSSystems::CollisionGroup );
-
-		// cache all entities in seperate containers to iterate over
-		std::vector<Entity*> playerCache, enemyCache, environmentCache;
-		for( auto entity : group )
+		// get all the containers for collision
+		auto player = entityManager.GetComponentArray<Player>();
+		auto enemy = entityManager.GetComponentArray<Enemy>();
+		auto environment = entityManager.GetComponentArray<Environment>();
+		// for every player check if it collides with environment and then enemy
+		for( auto p : player )
 		{
-			if( entity->HasComponent<Player>() )
+			if( p != nullptr )
 			{
-				playerCache.emplace_back( std::move( entity ) );
-			}
-			else if( entity->HasComponent<Enemy>() )
-			{
-				enemyCache.emplace_back( std::move( entity ) );
-			}
-			else if( entity->HasComponent<Environment>() )
-			{
-				environmentCache.emplace_back( std::move( entity ) );
-			}
-		}
-		// check if a player entity is colliding with environment and enemy
-		for( auto player : playerCache )
-		{
-			bool collided = false;
-			// create the player hitbox to check against
-			sf::IntRect playerRect;
-			{
-				sf::Vector2f playerPos = player->GetComponent<Position>().pos;
-				sf::Vector2i playerDim = player->GetComponent<Collision>().dim;
-				playerRect.left = int( playerPos.x );
-				playerRect.top = int( playerPos.y );
-				playerRect.width = playerDim.x;
-				playerRect.height = playerDim.y;
-			}
-			for( auto environment : environmentCache )
-			{
-				// create the environment hitbox to check against
-				sf::IntRect environmentRect;
+				EntityID pID = std::static_pointer_cast<Input>( p )->entity;
+				if( entityManager.GetComponent<Collision>( pID )->canCollide )
 				{
-					sf::Vector2f environmentPos = environment->GetComponent<Position>().pos;
-					sf::Vector2i environmentDim = environment->GetComponent<Collision>().dim;
-					environmentRect.left = int( environmentPos.x );
-					environmentRect.top = int( environmentPos.y );
-					environmentRect.width = environmentDim.x;
-					environmentRect.height = environmentDim.y;
-				}
-				if( playerRect.intersects( environmentRect ) )
-				{
-					// send msg player collided with environment
-					collided = true;
-					break;
-				}
-			}
-			if( !collided )
-			{
-				for( auto enemy : enemyCache )
-				{
-					// create the enemy hitbox to check against
-					sf::IntRect enemyRect;
+					sf::IntRect playerRect{ static_cast<sf::Vector2i>( entityManager.GetComponent<Position>( pID )->pos ), entityManager.GetComponent<Dimention>( pID )->dim };
+					// check if player pID collides with environment eID
+					for( auto e : environment )
 					{
-						sf::Vector2f enemyPos = enemy->GetComponent<Position>().pos;
-						sf::Vector2i enemyDim = enemy->GetComponent<Collision>().dim;
-						enemyRect.left = int( enemyPos.x );
-						enemyRect.top = int( enemyPos.y );
-						enemyRect.width = enemyDim.x;
-						enemyRect.height = enemyDim.y;
-					}
-					if( playerRect.intersects( enemyRect ) )
-					{
-						// send msg player collided with enemy
-						enemy->GetComponent<Sprite>().sprite.setColor( sf::Color( 255, 255, 255, 128 ) ); // testcode
-						break;
-					}
-					else
-					{
-						// check if enemy collided with environment
-						for( auto environment : environmentCache )
+						if( e != nullptr )
 						{
-							// create the environment hitbox to check against
-							sf::IntRect environmentRect;
+							EntityID eID = std::static_pointer_cast<Input>( e )->entity;
+							if( entityManager.GetComponent<Collision>( eID )->canCollide )
 							{
-								sf::Vector2f environmentPos = environment->GetComponent<Position>().pos;
-								sf::Vector2i environmentDim = environment->GetComponent<Collision>().dim;
-								environmentRect.left = int( environmentPos.x );
-								environmentRect.top = int( environmentPos.y );
-								environmentRect.width = environmentDim.x;
-								environmentRect.height = environmentDim.y;
+								sf::IntRect environmentRect{ static_cast<sf::Vector2i>( entityManager.GetComponent<Position>( eID )->pos ), entityManager.GetComponent<Dimention>( eID )->dim };
+								if( playerRect.intersects( environmentRect ) )
+								{
+									// msg player pID collided with environment eID
+									break;
+								}
 							}
-							if( enemyRect.intersects( environmentRect ) )
+						}
+					}
+					// check if player pID collides with enemy eID
+					for( auto e : enemy )
+					{
+						if( e != nullptr )
+						{
+							EntityID eID = std::static_pointer_cast<Enemy>( e )->entity;
+							if( entityManager.GetComponent<Collision>( eID )->canCollide )
 							{
-								// send msg enemy collided with environment
-								break;
+								sf::IntRect enemyRect{ static_cast<sf::Vector2i>( entityManager.GetComponent<Position>( eID )->pos ), entityManager.GetComponent<Dimention>( eID )->dim };
+								if( playerRect.intersects( enemyRect ) )
+								{
+									// msg player pID collided with enemy eID
+									break;
+								}
+								// check if enemy eID collided with environment envID
+								for( auto env : environment )
+								{
+									if( env != nullptr )
+									{
+										EntityID envID = std::static_pointer_cast<Environment>( env )->entity;
+
+										if( entityManager.GetComponent<Collision>( envID )->canCollide )
+										{
+											sf::IntRect environmentRect{ static_cast<sf::Vector2i>( entityManager.GetComponent<Position>( envID )->pos ), entityManager.GetComponent<Dimention>( envID )->dim };
+											if( enemyRect.intersects( environmentRect ) )
+											{
+												// msg enemy eID collided with environment envID
+												break;
+											}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -110,27 +81,37 @@ namespace ecs
 	RenderSystem::RenderSystem( EntityManager& eManager )
 		:
 		entityManager( eManager )
-	{}
+	{
+	}
 	void RenderSystem::Draw( sf::RenderWindow& window, const float interpolation )
 	{
-		// get all entities that need to be drawn
-		auto group = entityManager.GetEntitiesByGroup( ECSSystems::RenderGroup );
-
-		for( auto entity : group )
+		// get the draw container
+		auto drawable = entityManager.GetComponentArray<Drawable>();
+		// set sprite position and draw every entity that needs to be drawn
+		for( auto d : drawable )
 		{
-			auto sprite = entity->GetComponent<Sprite>();
-			sprite.sprite.setPosition( entity->GetComponent<Position>().pos );
-			window.draw( sprite.sprite );
+			if( d != nullptr )
+			{
+				EntityID eID = std::static_pointer_cast<Drawable>( d )->entity;
+				if( entityManager.GetComponent<Drawable>( eID )->draw )
+				{
+					auto draw = entityManager.GetComponent<Sprite>( eID );
+					draw->sprite.setPosition( entityManager.GetComponent<Position>( eID )->pos * interpolation );
+					window.draw( draw->sprite );
+				}
+			}
 		}
 	}
 	InputSystem::InputSystem( EntityManager& eManager )
 		:
 		entityManager( eManager )
-	{}
+	{
+	}
 	void InputSystem::Update( const float tick )
 	{
-		// get all entities that need to be drawn
-		auto group = entityManager.GetEntitiesByGroup( ECSSystems::InputGroup );
+		// get the input  container
+		auto input = entityManager.GetComponentArray<Input>();
+		// set heading and velocity based on input, to later update the position
 		auto heading = Heading::DOWN;
 		sf::Vector2f velocity;
 		if( sf::Keyboard::isKeyPressed( sf::Keyboard::Up ) )
@@ -153,11 +134,21 @@ namespace ecs
 			heading = Heading::Right;
 			velocity.x = 1.0f;
 		}
-		for( auto entity : group )
+		// for every entity that has an input -> handle the input
+		for( auto in : input )
 		{
-			entity->GetComponent<Heading>().direction = heading;
-			velocity = velocity * entity->GetComponent<Velocity>().vel;
-			entity->GetComponent<Position>().pos += velocity * tick;
+			if( in != nullptr )
+			{
+				EntityID eID = std::static_pointer_cast<Input>( in )->entity;
+				if( entityManager.GetComponent<Input>( eID )->handleInput )
+				{
+					entityManager.GetComponent<Heading>( eID )->direction = heading;
+					auto vel = entityManager.GetComponent<Velocity>( eID )->vel;
+					velocity.x *= vel.x;
+					velocity.y *= vel.y;
+					entityManager.GetComponent<Position>( eID )->pos += velocity * tick;
+				}
+			}
 		}
 	}
 }

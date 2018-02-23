@@ -1,27 +1,34 @@
 #pragma once
 #include <bitset>
+#include <memory>
 
 // Definitions for the Entity Component System
 namespace ecs
 {
-	// forward declare Component
-	struct Component;
 	// declared some usings for better readability
-	constexpr std::size_t maxComponent{ 32 };
-	using ComponentArray = std::array<Component*, maxComponent>;
-	using ComponentBitset = std::bitset<maxComponent>;
-	using ComponentID = std::size_t;
+	constexpr std::size_t maxComponent{ 32u };
+	constexpr std::size_t maxEntities{ 512u };
 	using EntityID = std::size_t;
-	constexpr std::size_t maxGroups{ 32 };
-	using Group = std::size_t;
-	using GroupBitset = std::bitset<maxGroups>;
-	// enum for entity groups -> each system has a group to iterate over
-	enum ECSSystems : Group
+	using ComponentID = std::size_t;
+	using ResID = std::size_t;
+	// forward declare for the array
+	struct Component;
+	using ComponentArray = std::array<std::shared_ptr<Component>, maxEntities>;
+
+	// enums for identifying resources
+	enum class Texture : ResID
 	{
-		RenderGroup,
-		CollisionGroup,
-		PhysicsGroup,
-		InputGroup
+		SKELETON,
+		CUPHEAD
+	};
+	enum class Font : ResID
+	{
+	};
+	enum class Sound : ResID
+	{
+	};
+	enum class Music : ResID
+	{
 	};
 }
 

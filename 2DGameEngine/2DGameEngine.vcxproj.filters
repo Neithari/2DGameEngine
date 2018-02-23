@@ -33,9 +33,6 @@
     <ClCompile Include="ECSFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,6 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Sprite\Skeleton.png">
+      <Filter>Sprite</Filter>
+    </Image>
+    <Image Include="Sprite\Cuphead.png">
       <Filter>Sprite</Filter>
     </Image>
   </ItemGroup>

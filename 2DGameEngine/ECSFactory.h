@@ -9,8 +9,11 @@ namespace ecs
 	{
 	public:
 		ECSFactory( EntityManager& entityManager, ResourceManager& resManager );
-		Entity& CreateSkeleton();
-		Entity& CreatePlayer();
+
+		void CreateEnvironment();
+		void CreatePlayer();
+		void CreateSkeleton( int count );
+		void CreateCuphead( int count );
 	private:
 		EntityManager& entityManager;
 		ResourceManager& resManager;
